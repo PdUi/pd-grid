@@ -1,56 +1,57 @@
-$grid-border: 1px solid #CCC;
+$grid-border: 1px solid #ccc;
 
-$grid-odd-row-background-color: #EEE;
-$grid-even-row-background-color: #FFF;
+$grid-odd-row-background-color: #eee;
+$grid-even-row-background-color: #fff;
 
-$grid-odd-row-hovered-row-background-color: #DDD;
-$grid-even-row-hovered-row-background-color: #EEE;
+$grid-odd-row-hovered-row-background-color: #ddd;
+$grid-even-row-hovered-row-background-color: #eee;
 
-$grid-odd-row-hovered-cell-background-color: #DDD;
-$grid-even-row-hovered-cell-background-color: #EEE;
+$grid-odd-row-hovered-cell-background-color: #ddd;
+$grid-even-row-hovered-cell-background-color: #eee;
 
-$grid-odd-row-selected-row-background-color: #CCC;
-$grid-even-row-selected-row-background-color: #DDD;
+$grid-odd-row-selected-row-background-color: #ccc;
+$grid-even-row-selected-row-background-color: #ddd;
 
-$grid-odd-row-selected-cell-background-color: #CCC;
-$grid-even-row-selected-cell-background-color: #DDD;
+$grid-odd-row-selected-cell-background-color: #ccc;
+$grid-even-row-selected-cell-background-color: #ddd;
 
-$grid-odd-row-changed-row-background-color: beige;
-$grid-even-row-changed-row-background-color: beige;
+$grid-odd-row-changed-row-background-color: #f5f5dc;
+$grid-even-row-changed-row-background-color: #f5f5dc;
 
-$grid-odd-row-changed-cell-background-color: burlywood;
-$grid-even-row-changed-cell-background-color: bisque;
+$grid-odd-row-changed-cell-background-color: #deb887;
+$grid-even-row-changed-cell-background-color: #ffe4c4;
 
 $grid-border-radius: 6px;
 
 .grid {
-    width: 100%; 
     border-collapse: separate;
     border-spacing: 0;
-    table-layout: fixed; // this will make all columns same width. could set explicit widths on each cell
-                         // quick test indicates that if i change the width of the header cell, it should effect the whole column, so could target the last one(actions for a smaller width)
-    #grid-actions-column{
+    table-layout: fixed; // this will make all columns same width. could set explicit widths on each cell quick test indicates that if i change the width of the header cell, it should effect the whole column, so could target the last one (actions for a smaller width)
+    width: 100%;
+
+    .grid-actions-column {
         width: 50px;
     }
 
     tr {
-        th, td {
-          border-right: $grid-border;
-          border-bottom: $grid-border;
-          padding: 4px;
+        th,
+        td {
+            border-bottom: $grid-border;
+            border-right: $grid-border;
+            padding: 4px;
 
-          &:first-child {
-              border-left: $grid-border;
+            &:first-child {
+                border-left: $grid-border;
             }
         }
 
         th {
-          border-top: $grid-border;
-          text-align: left;
+            border-top: $grid-border;
+            text-align: left;
 
-          > div {
-            display: inline-block;
-          }
+            > div {
+                display: inline-block;
+            }
         }
 
         &:first-child {
@@ -58,17 +59,19 @@ $grid-border-radius: 6px;
                 &:first-child {
                     border-top-left-radius: $grid-border-radius;
                 }
+
                 &:last-child {
-                  border-top-right-radius: $grid-border-radius;
+                    border-top-right-radius: $grid-border-radius;
                 }
             }
         }
-        
+
         &:last-child {
             td {
                 &:first-child {
                     border-bottom-left-radius: $grid-border-radius;
                 }
+
                 &:last-child {
                     border-bottom-right-radius: $grid-border-radius;
                 }
@@ -76,93 +79,85 @@ $grid-border-radius: 6px;
         }
     }
 
-    > thead {
-        > tr {
-            > th {
-                text-align: left;
+    > thead > tr > th {
+        text-align: left;
 
-                > div {
+        > div {
 
-                    &:first-child {
-                        margin-top: 3px;
-                    }
+            &:first-child {
+                margin-top: 3px;
+            }
 
-                    &:last-child {
-                        margin-bottom: 3px;
-                    }
+            &:last-child {
+                margin-bottom: 3px;
+            }
 
-                    > div {
-                        font-size: 10px;
-                        text-align: center;
-                        margin: -5px;
-                    }
-                }
-            } 
+            > div {
+                font-size: 10px;
+                margin: -5px;
+                text-align: center;
+            }
         }
     }
 
-    > tbody {
-        > tr {
-            &:nth-child(odd) {
-                background-color: $grid-odd-row-background-color;
+    > tbody > tr:nth-child(odd) {
+        background-color: $grid-odd-row-background-color;
 
-                &.hovered {
-                  background-color: $grid-odd-row-hovered-row-background-color;
+        &.hovered {
+            background-color: $grid-odd-row-hovered-row-background-color;
 
-                  > td.hovered {
-                    background-color: $grid-odd-row-hovered-cell-background-color;
-                  }
-                }
-
-               &.selected {
-                  background-color: $grid-odd-row-selected-row-background-color;
-
-                  > td.selected {
-                    background-color: $grid-odd-row-selected-cell-background-color;
-                  }
-                }
-
-                &.changed {
-                 background-color: $grid-odd-row-changed-row-background-color;
-
-                  > td.changed {
-                    background-color: $grid-odd-row-changed-cell-background-color !important;
-                  }
-                }
-            }
-
-            &:nth-child(even) {
-                background-color: $grid-even-row-background-color;
-
-                &.hovered {
-                  background-color: $grid-even-row-hovered-row-background-color;
-
-                  > td.hovered {
-                    background-color: $grid-even-row-hovered-cell-background-color;
-                  }
-                }
-
-               &.selected {
-                  background-color: $grid-even-row-selected-row-background-color;
-
-                  > td.selected {
-                    background-color: $grid-even-row-selected-cell-background-color;
-                  }
-                }
-
-                &.changed {
-                  background-color: $grid-even-row-changed-row-background-color;
-
-                  > td.changed {
-                    background-color: $grid-even-row-changed-cell-background-color !important;
-                  }
-                }
-            }
-
-            > td {
-                text-align: left;
-                height: 21px;
+            > td.hovered {
+                background-color: $grid-odd-row-hovered-cell-background-color;
             }
         }
+
+        &.selected {
+            background-color: $grid-odd-row-selected-row-background-color;
+
+            > td.selected {
+                background-color: $grid-odd-row-selected-cell-background-color;
+            }
+        }
+
+        &.changed {
+            background-color: $grid-odd-row-changed-row-background-color;
+
+            > td.changed {
+                background-color: $grid-odd-row-changed-cell-background-color !important;
+            }
+        }
+    }
+
+    > tbody > tr:nth-child(even) {
+        background-color: $grid-even-row-background-color;
+
+        &.hovered {
+            background-color: $grid-even-row-hovered-row-background-color;
+
+            > td.hovered {
+                background-color: $grid-even-row-hovered-cell-background-color;
+            }
+        }
+
+        &.selected {
+            background-color: $grid-even-row-selected-row-background-color;
+
+            > td.selected {
+                background-color: $grid-even-row-selected-cell-background-color;
+            }
+        }
+
+        &.changed {
+            background-color: $grid-even-row-changed-row-background-color;
+
+            > td.changed {
+                background-color: $grid-even-row-changed-cell-background-color !important;
+            }
+        }
+    }
+
+    > tbody > tr > td {
+        height: 21px;
+        text-align: left;
     }
 }

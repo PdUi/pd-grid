@@ -13,7 +13,7 @@ gulp.task('lint-styles', function() {
 gulp.task('process-styles', ['lint-styles'], function() {
     return gulp.src(paths.styles)
                .pipe($.plumber({errorHandler: $.notify.onError('Error: <%= error.message %>')}))
-               .pipe($.changedInPlace({firstPass:true}))
+            //    .pipe($.changedInPlace({firstPass:true}))
                .pipe($.sourcemaps.init())
                .pipe($.sass())
                .pipe($.sourcemaps.write('./maps'))

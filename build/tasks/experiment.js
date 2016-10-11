@@ -42,12 +42,12 @@ function getFileStreams(isModule) {
     //     pagerTemplateConstantsStream = pagerTemplateConstantsStream.pipe($.injectString.prepend('export '));
     // }
 
-    // var pagerStream = gulp.src(paths.root + 'pager.ts');
-    // if (isModule) {
-    //     pagerStream = pagerStream.pipe($.injectString.prepend('import {ILogger} from \'./i-logger\';\nimport {IPagerOptions} from \'./i-pager-options\';\nimport {IPagerTemplates} from \'./i-pager-templates\';\nimport {PagerTemplateConstants} from \'./pager-templates-constants\';\n\nexport '));
-    // }
+    var gridStream = gulp.src(paths.root + 'grid.ts');
+    if (isModule) {
+        gridStream = gridStream.pipe($.injectString.prepend('export '));
+    }
 
-    // return [iLoggerStream, iPagerTemplatesStream, iPagerOptionsStream, pagerTemplateConstantsStream, pagerStream];
+    return [gridStream]; // iLoggerStream, iPagerTemplatesStream, iPagerOptionsStream, pagerTemplateConstantsStream, pagerStream];
 }
 
 function prependFilesForModules(moduleType, isEsNextModule) {

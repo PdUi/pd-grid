@@ -9,7 +9,7 @@ function reportChange(event) {
 
 gulp.task('watch', ['serve'], function () {
     gulp.watch(paths.markup, ['process-markup', browserSync.reload]).on('change', reportChange);
-    gulp.watch(paths.typescript, ['transpile-typescript', browserSync.reload]).on('change', reportChange);
+    gulp.watch(paths.typescript, ['modules', browserSync.reload]).on('change', reportChange);
     gulp.watch(paths.styles, ['process-styles', browserSync.reload]).on('change', reportChange);
 });
 

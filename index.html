@@ -13,19 +13,12 @@
         <script src="./jspm_packages/system.js"></script>
         <script src="./config.js"></script>
         <script>
-            // window.define = System.amdDefine;
-            // window.require = window.requirejs = System.amdRequire;
+            window.define = System.amdDefine;
+            window.require = window.requirejs = System.amdRequire;
 
-            // System.import('./dist/js/system/pager').then((PdPager) => {
-            //     var element1 = document.getElementById('pager1');
-
-            //     var pdPager = new PdPager.Pager({
-            //         enableFirstLastPageArrows: true,
-            //         enablePageArrows: true,
-            //         enablePageInput: true,
-            //         totalNumberOfRecords: 100
-            //     }, element1);
-
+            System.import('./dist/js/system/grid').then((PdGrid) => {
+                var gridContainer = document.getElementById('grid1');
+                var grid = new PdGrid.Grid().buildGrid(gridContainer);
             //     var i = 0;
             //     element1.addEventListener('page', function () {
             //         i++;
@@ -45,7 +38,7 @@
             //         console.log(`pdPager2: changed${i3}`)
             //         console.log(event.detail);
             //     });
-            // });
+            });
         </script>
     </body>
 </html>

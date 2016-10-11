@@ -1,0 +1,71 @@
+.grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%; }
+  .grid .grid-actions-column {
+    width: 50px; }
+  .grid tr th,
+  .grid tr td {
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding: 4px; }
+    .grid tr th:first-child,
+    .grid tr td:first-child {
+      border-left: 1px solid #ccc; }
+  .grid tr th {
+    border-top: 1px solid #ccc;
+    text-align: left; }
+    .grid tr th > div {
+      display: inline-block; }
+  .grid tr:first-child th:first-child {
+    border-top-left-radius: 6px; }
+  .grid tr:first-child th:last-child {
+    border-top-right-radius: 6px; }
+  .grid tr:last-child td:first-child {
+    border-bottom-left-radius: 6px; }
+  .grid tr:last-child td:last-child {
+    border-bottom-right-radius: 6px; }
+  .grid > thead > tr > th {
+    text-align: left; }
+    .grid > thead > tr > th > div:first-child {
+      margin-top: 3px; }
+    .grid > thead > tr > th > div:last-child {
+      margin-bottom: 3px; }
+    .grid > thead > tr > th > div > div {
+      font-size: 10px;
+      margin: -5px;
+      text-align: center; }
+  .grid > tbody > tr:nth-child(odd) {
+    background-color: #eee; }
+    .grid > tbody > tr:nth-child(odd).hovered {
+      background-color: #ddd; }
+      .grid > tbody > tr:nth-child(odd).hovered > td.hovered {
+        background-color: #ddd; }
+    .grid > tbody > tr:nth-child(odd).selected {
+      background-color: #ccc; }
+      .grid > tbody > tr:nth-child(odd).selected > td.selected {
+        background-color: #ccc; }
+    .grid > tbody > tr:nth-child(odd).changed {
+      background-color: #f5f5dc; }
+      .grid > tbody > tr:nth-child(odd).changed > td.changed {
+        background-color: #deb887 !important; }
+  .grid > tbody > tr:nth-child(even) {
+    background-color: #fff; }
+    .grid > tbody > tr:nth-child(even).hovered {
+      background-color: #eee; }
+      .grid > tbody > tr:nth-child(even).hovered > td.hovered {
+        background-color: #eee; }
+    .grid > tbody > tr:nth-child(even).selected {
+      background-color: #ddd; }
+      .grid > tbody > tr:nth-child(even).selected > td.selected {
+        background-color: #ddd; }
+    .grid > tbody > tr:nth-child(even).changed {
+      background-color: #f5f5dc; }
+      .grid > tbody > tr:nth-child(even).changed > td.changed {
+        background-color: #ffe4c4 !important; }
+  .grid > tbody > tr > td {
+    height: 21px;
+    text-align: left; }
+
+/*# sourceMappingURL=maps/grid.css.map */
