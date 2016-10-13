@@ -1,16 +1,16 @@
 export class Grid {
     constructor() {
-        this.columnDefinitions = [{ actions: [], classList: '', displayName: 'foo', id: 1, isVisible: true, propertyName: 'foo' }];
+        this.columnDefinitions = [{ actions: [], classList: '', displayName: 'foo', id: 1, isEditable: true, isVisible: true, propertyName: 'foo' }];
         this.rows = [{ foo: 'bar', id: 1 }];
         this.gridOptions = { editingEnabled: true, id: null, parentElement: null, sortingEnabled: true, theadClassList: '' };
         this.gridState = {
             columnDefinitionSortedOn: this.columnDefinitions[0],
             currentSortDirection: SortDirection.None,
-            focusedColumnDefinition: this.columnDefinitions[0],
-            focusedRow: this.rows[0],
+            focusedColumnDefinition: null,
+            focusedRow: null,
             id: null,
-            mousedOverColumnDefinition: this.columnDefinitions[0],
-            mousedOverRow: this.rows[0],
+            mousedOverColumnDefinition: null,
+            mousedOverRow: null,
         };
     }
     buildGrid(parentElement) {
@@ -61,6 +61,7 @@ export class Grid {
                 else {
                     tdElement.innerHTML = row[columnDefinition.propertyName];
                     tdElement.addEventListener('click', this.cellClicked.bind(this, columnDefinition, row));
+                    tdElement.addEventListener('dblclick', this.cellDoubleClicked.bind(this, columnDefinition, row));
                 }
                 tdElement.addEventListener('mouseover', this.cellMousedOver.bind(this, columnDefinition, row));
                 tdElement.addEventListener('mouseout', this.cellMousedOut.bind(this, columnDefinition, row));
@@ -112,13 +113,20 @@ export class Grid {
         this.gridState.focusedRow = row;
         this.updateCellClasses();
     }
+    cellDoubleClicked(columnDefinition, row) {
+        this.gridState.focusedColumnDefinition = columnDefinition;
+        this.gridState.focusedRow = row;
+        this.updateCellClasses();
+    }
     cellMousedOver(columnDefinition, row) {
         this.gridState.mousedOverColumnDefinition = columnDefinition;
         this.gridState.mousedOverRow = row;
+        this.updateCellClasses();
     }
     cellMousedOut(columnDefinition, row) {
         this.gridState.mousedOverColumnDefinition = null;
         this.gridState.mousedOverRow = null;
+        this.updateCellClasses();
     }
     headerCellMousedOut(columnDefinition) {
         this.gridState.mousedOverColumnDefinition = null;

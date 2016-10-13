@@ -1,15 +1,15 @@
 class Grid {
-    private columnDefinitions: ColumnDefinition[] = [ { actions: [], classList: '', displayName: 'foo', id: 1, isVisible: true, propertyName: 'foo' } ];
+    private columnDefinitions: ColumnDefinition[] = [ { actions: [], classList: '', displayName: 'foo', id: 1, isEditable: true, isVisible: true, propertyName: 'foo' } ];
     private rows: any[] = [ { foo: 'bar', id: 1 } ];
     private gridOptions: GridOptions = { editingEnabled: true, id: null, parentElement: null, sortingEnabled: true, theadClassList: '' };
     private gridState: GridState = {
         columnDefinitionSortedOn: this.columnDefinitions[0],
         currentSortDirection: SortDirection.None,
-        focusedColumnDefinition: this.columnDefinitions[0],
-        focusedRow: this.rows[0],
+        focusedColumnDefinition: null,
+        focusedRow: null,
         id: null,
-        mousedOverColumnDefinition: this.columnDefinitions[0],
-        mousedOverRow: this.rows[0],
+        mousedOverColumnDefinition: null,
+        mousedOverRow: null,
     };
     private parentElement: HTMLElement;
 
@@ -41,16 +41,14 @@ class Grid {
                 let trElement = document.createElement('tr');
                 // TODO: have row provide function for adding class to tr(i.e. function(obj) { return obj.isActive ? '' : 'inactive'; })
                 if (this.gridState.focusedRow === row) {
-                    trElement.classList.add('focus');
+                    this.addClassesToHtmlElement(trElement, 'focus');
                 }
 
                 if (this.gridState.mousedOverRow === row) {
-                    trElement.classList.add('mouseover');
+                    this.addClassesToHtmlElement(trElement, 'mouseover');
                 }
 
-                if (row.classList) {
-                    trElement.classList.add(row.classList);
-                }
+                this.addClassesToHtmlElement(trElement, row.classList);
 
                 this.columnDefinitions
                     .filter(columnDefinition => columnDefinition.isVisible)
@@ -58,11 +56,11 @@ class Grid {
                         // TODO: have columnDefinition provide function for adding class to cell(i.e. function(money) { return money < 0 ? 'negative' : ''; })
                         let tdElement = document.createElement('td');
                         if (this.gridState.focusedRow === row) {
-                            tdElement.classList.add('focus');
+                            this.addClassesToHtmlElement(tdElement, 'focus');
                         }
 
                         if (this.gridState.mousedOverRow === row) {
-                            tdElement.classList.add('mouseover');
+                            this.addClassesToHtmlElement(tdElement, 'mouseover');
                         }
 
                         if (this.gridOptions.editingEnabled && this.gridState.focusedRow === row && this.gridState.focusedColumnDefinition === columnDefinition) {
@@ -75,6 +73,7 @@ class Grid {
                             // TODO: provide formatter function on columnDefinition
                             tdElement.innerHTML = row[columnDefinition.propertyName];
                             tdElement.addEventListener('click', this.cellClicked.bind(this, columnDefinition, row));
+                            tdElement.addEventListener('dblclick', this.cellDoubleClicked.bind(this, columnDefinition, row));
                         }
 
                         tdElement.addEventListener('mouseover', this.cellMousedOver.bind(this, columnDefinition, row));
@@ -97,7 +96,17 @@ class Grid {
                                        .getElementsByTagName('tr');
 
         for (let rowId = 0; rowId < tableRowElements.length; rowId++) {
-            let tableCellElements = tableRowElements[rowId].getElementsByTagName('td');
+            let row = tableRowElements[rowId];
+
+            if (this.gridState.focusedRow === row && !row.classList.contains('focus')) {
+                row.classList.add('focus');
+            }
+
+            if (this.gridState.mousedOverRow === row && !row.classList.contains('mouseover')) {
+                row.classList.add('mouseover');
+            }
+
+            let tableCellElements = row.getElementsByTagName('td');
 
             for (let columnId = 0; columnId < tableCellElements.length; columnId++) {
                 if (this.rows[rowId] === this.gridState.focusedRow && this.columnDefinitions[columnId] === this.gridState.focusedColumnDefinition) {
@@ -123,6 +132,22 @@ class Grid {
         }
     }
 
+    private addClassesToHtmlElement(element: HTMLElement, classList: string | string[]) {
+        if (classList.length <= 0) return;
+
+        if (typeof(classList) === 'string') {
+            if (!element.classList.contains(classList)) {
+                element.classList.add(classList);
+            }
+        } else {
+            classList.forEach(cssClass => {
+                if (!element.classList.contains(cssClass)) {
+                    element.classList.add(cssClass);
+                }
+            })
+        }
+    }
+
     private cellBlurred(columnDefinition, row): void {
         this.gridState.focusedColumnDefinition = null;
         this.gridState.focusedRow = null;
@@ -130,6 +155,12 @@ class Grid {
     }
 
     private cellClicked(columnDefinition, row): void {
+        this.gridState.focusedColumnDefinition = columnDefinition;
+        this.gridState.focusedRow = row;
+        this.updateCellClasses();
+    }
+
+    private cellDoubleClicked(columnDefinition, row): void {
         this.gridState.focusedColumnDefinition = columnDefinition;
         this.gridState.focusedRow = row;
         this.updateCellClasses();
@@ -166,7 +197,11 @@ class Grid {
         let theadElement = document.createElement('thead');
         let trElement = document.createElement('tr');
         if (this.gridOptions.theadClassList) {
-            trElement.classList.add(this.gridOptions.theadClassList);
+            if (typeof(this.gridOptions.theadClassList) === 'string') {
+                trElement.classList.add(this.gridOptions.theadClassList);
+            } else {
+                this.gridOptions.theadClassList.forEach(cssClass => trElement.classList.add(cssClass));
+            }
         }
 
         this.columnDefinitions
@@ -182,7 +217,11 @@ class Grid {
                 }
 
                 if (columnDefinition.classList) {
-                    theadElement.classList.add(columnDefinition.classList);
+                    if (typeof(columnDefinition.classList) === 'string') {
+                        theadElement.classList.add(columnDefinition.classList);
+                    } else {
+                        columnDefinition.classList.forEach(cssClass => theadElement.classList.add(cssClass));
+                    }
                 }
 
                 thElement.innerHTML = columnDefinition.displayName;
@@ -192,19 +231,14 @@ class Grid {
 
                     switch (this.gridState.currentSortDirection) {
                         case SortDirection.Ascending:
-                            // this.gridState.currentSortDirection = SortDirection.Descending;
                             sortIcon.innerHTML = '&#9650;';
                             thElement.appendChild(sortIcon);
                             break;
                         case SortDirection.Descending:
                             sortIcon.innerHTML = '&#9660;';
                             thElement.insertBefore(sortIcon, thElement.firstChild);
-                            // this.gridState.currentSortDirection = SortDirection.None;
                             break;
                         default:
-                            // this.gridState.currentSortDirection = SortDirection.Ascending;
-                            // sortIcon.innerHTML = '&#9660;';
-                            // thElement.insertBefore(sortIcon, thElement.firstChild);
                             break;
                     }
                 }
@@ -224,9 +258,10 @@ class Grid {
 
 class ColumnDefinition {
     public actions: { actionName: string }[]; // header.click, header.mouseover
-    public classList: string;
+    public classList: string | string[];
     public displayName: string;
     public id: number;
+    public isEditable: boolean;
     public isVisible: boolean;
     public propertyName: string;
 }
@@ -236,7 +271,7 @@ class GridOptions {
     public id: string;
     public parentElement: HTMLElement;
     public sortingEnabled: boolean;
-    public theadClassList: string;
+    public theadClassList: string | string[];
 }
 
 class GridState {
@@ -254,147 +289,3 @@ enum SortDirection {
     Ascending = 1,
     Descending = 2
 }
-// <table class="table-striped grid">
-//     <thead>
-//         <tr>
-//             <th data-ng-class="{selected: columnDefintion.id === gridVm.selectedColumnDefinitionId}"
-//                 data-ng-repeat="columnDefinition in gridVm.columnDefinitions track by $index"
-//                 data-ng-click="gridVm.sort(columnDefinition)">
-//                 <div>
-//                     <div data-ng-visible="gridVm.sortedColumn === columnDefinition.id && gridVm.sortDirection === 'ascending'">
-//                         <i class="glyphicon glyphicon-chevron-up"></i>
-//                     </div>
-//                     {{columnDefinition.title}}
-//                     <div data-ng-visible="gridVm.sortedColumn === columnDefinition.id && gridVm.sortDirection === 'descending'">
-//                         <i class="glyphicon glyphicon-chevron-down"></i>
-//                     </div>
-//                 </div>
-//             </th>
-//             <th data-ng-if="gridVm.gridActions.length" id="grid-actions-column"></th>
-//         </tr>
-//     </thead>
-//     <tbody>
-//         <tr data-ng-class="{selected: row.id == gridVm.selectedRowId}"
-//             data-ng-repeat="row in gridVm.rows"
-//             ng-init="rowId = $index">
-//             <td data-ng-repeat="columnDefinition in gridVm.columnDefinitions track by $index"
-//                 data-ng-click="gridVm.onclick($event, columnDefinition, row)"
-//                 data-ng-mouseenter="gridVm.hoveredColumnDefinition = columnDefinition;"
-//                 data-ng-mouseleave="gridVm.hoveredColumnDefinition = {};">
-//                 <input data-ng-if="gridVm.settings.enableInlineEditing"
-//                        data-ng-show="gridVm.selectedColumnDefinitionId == columnDefinition.id && row.id == gridVm.selectedRowId"
-//                        data-ng-model="row[columnDefinition.id]"
-//                        data-ng-blur="gridVm.onblur()"
-//                        type="text" />
-//                 <span data-ng-hide="gridVm.selectedColumnDefinitionId == columnDefinition.id && row.id == gridVm.selectedRowId">
-//                     {{row[columnDefinition.id]}}
-//                 </span>
-//             </td>
-
-//             <td data-ng-if="gridVm.gridActions.length">
-//                 <span data-ng-repeat="action in gridVm.gridActions track by $index"
-//                       data-ng-click="action.action(row)">
-//                     {{action.name}}
-//                 </span>
-//             </td>
-//         </tr>
-//     </tbody>
-// </table>
-
-// (function () {
-//     'use strict';
-
-//     angular.module('app')
-//            .directive('pdGrid', pdGridDirective)
-//            .controller('PdGridCtrl', ['$scope', '$timeout', pdGridController]);
-
-//     function pdGridDirective() {
-//         return {
-//             scope: {
-//                 'actions': '=',
-//                 'data': '=',
-//                 'settings': '='
-//             },
-//             templateUrl: 'templates/components/pd.grid.html',
-//             controller: 'PdGridCtrl',
-//             controllerAs: 'gridVm',
-//             restrict: 'E'
-//         };
-//     }
-
-//     function pdGridController($scope, $timeout) {
-//         var vm = this;
-
-//         vm.actions = $scope.actions || [];
-//         vm.data = $scope.data || {};
-//         vm.settings = $scope.settings || {};
-
-//         vm.gridActions = _.filter(vm.actions, function (action) { return action.name.toLowerCase() !== 'sort'; });
-
-//         vm.columnDefinitions = vm.data.columnDefinitions || [];
-//         vm.rows = vm.data.rows || [];
-
-//         vm.selectedColumnDefinitionId = '';
-//         vm.selectedRowId = 0;
-//         vm.onclick = function (event, columnDefinition, row) {
-//             if (vm.settings.enableInlineEditing) {
-//                 vm.selectedColumnDefinitionId = columnDefinition.id;
-//                 vm.selectedRowId = row.id;
-
-//                 var inputElement = angular.element(event.currentTarget).children()[0];
-//                  $timeout(function () {
-//                     inputElement.select();
-
-//                 }, 1);
-//             }
-//         };
-
-//         vm.onblur = function() {
-//             vm.selectedColumnDefinitionId = '';
-//             vm.selectedRowId = 0;
-//         };
-
-//         vm.sortedColumn = '';
-//         vm.sortDirection = 'none';
-
-//         vm.sort = function(columnDefinition) {
-//             var sortAction = _.find(vm.actions, function (action) { return action.name.toLowerCase() === 'sort'; });
-
-//             if (sortAction) {
-//                 if (vm.sortedColumn !== columnDefinition.id) {
-//                     vm.sortDirection = 'none';
-//                 }
-
-//                 if (vm.sortDirection === 'none') {
-//                     vm.sortedColumn = columnDefinition.id;
-//                     vm.sortDirection = 'ascending';
-//                 } else if (vm.sortDirection === 'ascending') {
-//                     vm.sortedColumn = columnDefinition.id;
-//                     vm.sortDirection = 'descending';
-//                 } else {
-//                     vm.sortedColumn = '';
-//                     vm.sortDirection = 'none';
-//                 }
-
-//                 var sortResults = sortAction.action(columnDefinition, vm.sortDirection);
-//                 vm.rows = sortResults;
-//             }
-//         };
-
-//         $scope.$watch(
-//             'data',
-//             function () {
-//                 vm.rows = vm.data.rows;
-//             },
-//             true
-//         );
-
-//         $scope.$watch(
-//             'actions',
-//             function () {
-//                 vm.gridActions = _.filter($scope.actions, function (action) { return action.name.toLowerCase() !== 'sort'; });
-//             },
-//             true
-//         );
-//     }
-// })();

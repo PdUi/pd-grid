@@ -2,17 +2,17 @@ define(["require", "exports"], function (require, exports) {
     "use strict";
     var Grid = (function () {
         function Grid() {
-            this.columnDefinitions = [{ actions: [], classList: '', displayName: 'foo', id: 1, isVisible: true, propertyName: 'foo' }];
+            this.columnDefinitions = [{ actions: [], classList: '', displayName: 'foo', id: 1, isEditable: true, isVisible: true, propertyName: 'foo' }];
             this.rows = [{ foo: 'bar', id: 1 }];
             this.gridOptions = { editingEnabled: true, id: null, parentElement: null, sortingEnabled: true, theadClassList: '' };
             this.gridState = {
                 columnDefinitionSortedOn: this.columnDefinitions[0],
                 currentSortDirection: SortDirection.None,
-                focusedColumnDefinition: this.columnDefinitions[0],
-                focusedRow: this.rows[0],
+                focusedColumnDefinition: null,
+                focusedRow: null,
                 id: null,
-                mousedOverColumnDefinition: this.columnDefinitions[0],
-                mousedOverRow: this.rows[0],
+                mousedOverColumnDefinition: null,
+                mousedOverRow: null,
             };
         }
         Grid.prototype.buildGrid = function (parentElement) {
@@ -64,6 +64,7 @@ define(["require", "exports"], function (require, exports) {
                     else {
                         tdElement.innerHTML = row[columnDefinition.propertyName];
                         tdElement.addEventListener('click', _this.cellClicked.bind(_this, columnDefinition, row));
+                        tdElement.addEventListener('dblclick', _this.cellDoubleClicked.bind(_this, columnDefinition, row));
                     }
                     tdElement.addEventListener('mouseover', _this.cellMousedOver.bind(_this, columnDefinition, row));
                     tdElement.addEventListener('mouseout', _this.cellMousedOut.bind(_this, columnDefinition, row));
@@ -115,13 +116,20 @@ define(["require", "exports"], function (require, exports) {
             this.gridState.focusedRow = row;
             this.updateCellClasses();
         };
+        Grid.prototype.cellDoubleClicked = function (columnDefinition, row) {
+            this.gridState.focusedColumnDefinition = columnDefinition;
+            this.gridState.focusedRow = row;
+            this.updateCellClasses();
+        };
         Grid.prototype.cellMousedOver = function (columnDefinition, row) {
             this.gridState.mousedOverColumnDefinition = columnDefinition;
             this.gridState.mousedOverRow = row;
+            this.updateCellClasses();
         };
         Grid.prototype.cellMousedOut = function (columnDefinition, row) {
             this.gridState.mousedOverColumnDefinition = null;
             this.gridState.mousedOverRow = null;
+            this.updateCellClasses();
         };
         Grid.prototype.headerCellMousedOut = function (columnDefinition) {
             this.gridState.mousedOverColumnDefinition = null;
